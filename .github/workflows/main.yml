@@ -1,0 +1,79 @@
+name: CI (Build) 
+
+on:
+  push:
+    branches:
+      - main
+      - feat*
+      - rp-*
+  pull_request:
+    branches:
+      - main
+      - modern
+
+permissions: write-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    env:
+      OCTOPUS_SPACE: 'Mercari PoC'
+  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set Version
+        run: echo "PACKAGE_VERSION=1.0.$((GITHUB_RUN_NUMBER))" >> $GITHUB_ENV
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: 'Login to GitHub Container Registry'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{github.actor}}
+          password: ${{secrets.GITHUB_TOKEN}}
+
+      - name: 'Build Docker Image'
+        run: |
+              docker build . --tag ghcr.io/robpearson/newservice:${{env.PACKAGE_VERSION}}
+              docker push ghcr.io/robpearson/newservice:${{env.PACKAGE_VERSION}}
+
+      - name: Login to Octopus Deploy 
+        uses: OctopusDeploy/login@v1.0.1
+        with: 
+          server: https://robpearson.octopus.app
+          api_key: ${{secrets.OCTOPUS_API_KEY}}
+
+      - name: Push Build Information
+        uses: OctopusDeploy/push-build-information-action@v3       
+        with:
+          version: ${{env.PACKAGE_VERSION}}
+          packages: robpearson/newservice
+          overwriteMode: OverwriteExisting
+          
+      - name: Create Octopus Release
+        uses: OctopusDeploy/create-release-action@v3
+        with: 
+          project: 'NewService'
+          release_number: ${{ env.PACKAGE_VERSION }}
+          release_notes: 'GitHub Commits URL: ${{ github.event.pull_request.commits_url }}'
+          git_ref: 'refs/heads/main'
+
+      # - name: Deploy a release in Octopus Deploy 🐙
+      #   uses: OctopusDeploy/deploy-release-tenanted-action@v3
+      #   with:
+      #     project: 'New Service'
+      #     release_number: ${{env.PACKAGE_VERSION}}
+      #     environment: 'Development'
