@@ -2,11 +2,8 @@ name: CI (Build)
 
 on:
   push:
-    branches:
-      - prod-hotfix
-  pull_request:
-    branches:
-      - prod-hotfix
+    tags:
+      - 'hotfix-**'
 
 permissions: write-all
 
@@ -57,5 +54,5 @@ jobs:
         uses: OctopusDeploy/push-build-information-action@v3       
         with:
           version: ${{env.PACKAGE_VERSION}}
-          packages: robpearson/newservice
+          packages: robpearson/newservice-prod
           overwriteMode: OverwriteExisting
