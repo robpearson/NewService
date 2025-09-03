@@ -30,5 +30,16 @@ step "hello-world" {
             feed = "dockerhub"
             image = "octopusdeploy/worker-tools:6.4.0-ubuntu.22.04"
         }
+
+        packages "octofx-frontend" {
+            acquisition_location = "ExecutionTarget"
+            feed = "github-container-registry"
+            package_id = "robpearson/octofx-frontend"
+            properties = {
+                Extract = "False"
+                Purpose = ""
+                SelectionMode = "immediate"
+            }
+        }
     }
 }
