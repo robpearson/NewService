@@ -1,9 +1,9 @@
-name: CI (Build) 
+name: CI (Prod Hotfix) 
 
 on:
   push:
     tags:
-      - 'hotfix-**'
+      - 'prod-hotfix**'
 
 permissions: write-all
 
