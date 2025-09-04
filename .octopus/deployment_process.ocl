@@ -31,10 +31,10 @@ step "hello-world" {
             image = "octopusdeploy/worker-tools:6.4.0-ubuntu.22.04"
         }
 
-        packages "octofx-frontend" {
+        packages "newservice" {
             acquisition_location = "ExecutionTarget"
             feed = "github-container-registry"
-            package_id = "robpearson/octofx-frontend"
+            package_id = "robpearson/newservice"
             properties = {
                 Extract = "False"
                 Purpose = ""
