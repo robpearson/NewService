@@ -43,3 +43,25 @@ step "hello-world" {
         }
     }
 }
+
+step "run-tests" {
+    name = "Run Tests"
+
+    action {
+        action_type = "Octopus.Script"
+        properties = {
+            Octopus.Action.Script.ScriptBody = <<-EOT
+                $version = $OctopusParameters["Octopus.Release.Number"]
+                $revision = "#{Octopus.Release.Number | VersionRevision}"
+                $moduloResult = $revision % 2
+                Write-Host "Revision is: $revision"
+                Write-Host "Modulo result is: $moduloResult"
+                exit $moduloResult
+                EOT
+            Octopus.Action.Script.ScriptSource = "Inline"
+            Octopus.Action.Script.Syntax = "PowerShell"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool = "hosted-ubuntu"
+    }
+}
