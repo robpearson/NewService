@@ -14,7 +14,7 @@ step "production-approval" {
 }
 
 step "hello-world" {
-    name = "Hello world!"
+    name = "Sample Script"
 
     action {
         action_type = "Octopus.Script"
