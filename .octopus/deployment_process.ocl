@@ -44,6 +44,71 @@ step "hello-world" {
     }
 }
 
+step "deploy-service-kustomize" {
+    name = "Deploy service (Kustomize) "
+    properties = {
+        Octopus.Action.TargetRoles = "platform-k8s"
+    }
+
+    action {
+        action_type = "Octopus.Kubernetes.Kustomize"
+        properties = {
+            Octopus.Action.GitRepository.Source = "Project"
+            Octopus.Action.Kubernetes.DeploymentTimeout = "180"
+            Octopus.Action.Kubernetes.Kustomize.OverlayPath = "manifests/overlays/#{Octopus.Environment.Name}"
+            Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
+            Octopus.Action.Kubernetes.ServerSideApply.Enabled = "True"
+            Octopus.Action.Kubernetes.ServerSideApply.ForceConflicts = "True"
+            Octopus.Action.Script.ScriptSource = "GitRepository"
+            Octopus.Action.SubstituteInFiles.TargetFiles = "**/*.env"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool = "hosted-ubuntu"
+
+        container {
+            feed = "dockerhub"
+            image = "octopusdeploy/worker-tools:6.4.0-ubuntu.22.04"
+        }
+    }
+}
+
+step "deploy-kubernetes-yaml" {
+    name = "Deploy Kubernetes YAML"
+    properties = {
+        Octopus.Action.TargetRoles = "platform-k8s"
+    }
+
+    action {
+        action_type = "Octopus.KubernetesDeployRawYaml"
+        properties = {
+            Octopus.Action.GitRepository.Source = "External"
+            Octopus.Action.Kubernetes.DeploymentTimeout = "180"
+            Octopus.Action.Kubernetes.ResourceStatusCheck = "True"
+            Octopus.Action.Kubernetes.ServerSideApply.Enabled = "True"
+            Octopus.Action.Kubernetes.ServerSideApply.ForceConflicts = "True"
+            Octopus.Action.KubernetesContainers.CustomResourceYamlFileName = "myteam/newservice/*"
+            Octopus.Action.KubernetesContainers.Namespace = "myteam"
+            Octopus.Action.Package.JsonConfigurationVariablesTargets = "**/*.{yml,yaml}"
+            Octopus.Action.Script.ScriptSource = "GitRepository"
+            OctopusUseBundledTooling = "False"
+        }
+        worker_pool = "hosted-ubuntu"
+
+        container {
+            feed = "dockerhub"
+            image = "octopusdeploy/worker-tools:6.4.0-ubuntu.22.04"
+        }
+
+        git_dependencies {
+            default_branch = "main"
+            file_path_filters = ["myteam/newservice/*"]
+            git_credential_id = "GitCredentials-161"
+            git_credential_type = "Library"
+            repository_uri = "https://github.com/robpearson/platform-gitops.git"
+        }
+    }
+}
+
 step "run-tests" {
     name = "Run Tests"
 
@@ -61,6 +126,24 @@ step "run-tests" {
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
             OctopusUseBundledTooling = "False"
+        }
+        worker_pool = "hosted-ubuntu"
+    }
+}
+
+step "notify-team" {
+    name = "Notify team"
+
+    action {
+        properties = {
+            Octopus.Action.Template.Id = "ActionTemplates-382"
+            Octopus.Action.Template.Version = "15"
+            ssn_Channel = "#production-notifications"
+            ssn_Color = "good"
+            ssn_HookUrl = "#{Slack.Webhook.Url}"
+            ssn_IconUrl = "https://octopus.com/content/resources/favicon.png"
+            ssn_Title = ":rocket: #{Octopus.Project.Name} release v#{Octopus.Release.Number} deployed #{Octopus.Environment.Name}}"
+            ssn_Username = "Octopus Deploy"
         }
         worker_pool = "hosted-ubuntu"
     }
