@@ -1,11 +1,11 @@
-variable "Project.Account" {
-    type = "GenericOidcAccount"
-
-    value "gcp-developer-playground" {}
-}
-
 variable "Octopus.Account" {
     type = "GenericOidcAccount"
 
     value "octopus-oidc" {}
+}
+
+variable "GCP.Account" {
+    type = "GenericOidcAccount"
+
+    value "gcp-developer-playground" {}
 }
