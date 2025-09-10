@@ -35,8 +35,7 @@ step "calculate-deployment-mode" {
             Octopus.Action.Template.Id = "ActionTemplates-383"
             Octopus.Action.Template.Version = "5"
         }
-        worker_pool = "hosted-windows"
-        worker_pool_variable = ""
+        worker_pool = "hosted-ubuntu"
     }
 }
 
