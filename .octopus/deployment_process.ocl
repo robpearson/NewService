@@ -27,6 +27,19 @@ step "octopus-authenticate-with-oidc" {
     }
 }
 
+step "calculate-deployment-mode" {
+    name = "Calculate Deployment Mode"
+
+    action {
+        properties = {
+            Octopus.Action.Template.Id = "ActionTemplates-383"
+            Octopus.Action.Template.Version = "5"
+        }
+        worker_pool = "hosted-windows"
+        worker_pool_variable = ""
+    }
+}
+
 step "gcp-test" {
     name = "GCP Test"
 
@@ -137,7 +150,11 @@ step "run-tests" {
 }
 
 step "rollback-on-failure" {
+    condition = "Variable"
     name = "Rollback on failure"
+    properties = {
+        Octopus.Step.ConditionVariableExpression = "#{if Octopus.Deployment.Error}#{Octopus.Action[Calculate Deployment Mode].Output.RunOnDeployOrRedeploy}#{/if}"
+    }
 
     action {
         properties = {
