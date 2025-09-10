@@ -13,6 +13,20 @@ step "production-approval" {
     }
 }
 
+step "octopus-authenticate-with-oidc" {
+    name = "Octopus - Authenticate with OIDC"
+
+    action {
+        properties = {
+            AuthenticateWithOIDC.OidcAccount = "Project.Account"
+            AuthenticateWithOIDC.ServerUri = "#{Octopus.Web.ServerUri}"
+            Octopus.Action.Template.Id = "ActionTemplates-401"
+            Octopus.Action.Template.Version = "1"
+        }
+        worker_pool = "hosted-ubuntu"
+    }
+}
+
 step "gcp-test" {
     name = "GCP Test"
 
