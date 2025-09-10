@@ -38,7 +38,7 @@ step "gcp-test" {
             Octopus.Action.GoogleCloud.Region = "australia-southeast1-a"
             Octopus.Action.GoogleCloud.UseVMServiceAccount = "False"
             Octopus.Action.GoogleCloud.Zone = "australia-southeast1"
-            Octopus.Action.GoogleCloudAccount.Variable = "Project.Account"
+            Octopus.Action.GoogleCloudAccount.Variable = "GCP.Account"
             Octopus.Action.Script.ScriptBody = "Write-Host \"Hello world!\""
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
