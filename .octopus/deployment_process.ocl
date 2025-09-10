@@ -18,7 +18,7 @@ step "octopus-authenticate-with-oidc" {
 
     action {
         properties = {
-            AuthenticateWithOIDC.OidcAccount = "Project.Account"
+            AuthenticateWithOIDC.OidcAccount = "Octopus.Account"
             AuthenticateWithOIDC.ServerUri = "#{Octopus.Web.ServerUri}"
             Octopus.Action.Template.Id = "ActionTemplates-401"
             Octopus.Action.Template.Version = "1"
