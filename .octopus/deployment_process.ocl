@@ -161,7 +161,7 @@ step "rollback-on-failure" {
             DeployOctopusRelease.Project = "#{Octopus.Project.Name}"
             DeployOctopusRelease.ReleaseNumber = "#{Octopus.Release.CurrentForEnvironment.Number}"
             DeployOctopusRelease.ServiceAccount = "Octopus.Account"
-            DeployOctopusRelease.ServiceAccountIdToken = "#{Octopus.Account.Jwt}"
+            DeployOctopusRelease.ServiceAccountIdToken = "#{Octopus.Account.OpenIdConnect.Jwt}"
             Octopus.Action.Template.Id = "ActionTemplates-403"
             Octopus.Action.Template.Version = "5"
         }
