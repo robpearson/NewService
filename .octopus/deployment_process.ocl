@@ -14,7 +14,7 @@ step "production-approval" {
 }
 
 step "octopus-authenticate-with-oidc" {
-    name = "Octopus - Authenticate with OIDC"
+    name = "Octopus-OIDC-Auth-Handshake"
 
     action {
         properties = {
@@ -131,6 +131,23 @@ step "run-tests" {
             Octopus.Action.Script.ScriptSource = "Inline"
             Octopus.Action.Script.Syntax = "PowerShell"
             OctopusUseBundledTooling = "False"
+        }
+        worker_pool = "hosted-ubuntu"
+    }
+}
+
+step "rollback-on-failure" {
+    name = "Rollback on failure"
+
+    action {
+        properties = {
+            DeployOctopusRelease.Environment = "#{Octopus.Environment.Name}"
+            DeployOctopusRelease.Project = "#{Octopus.Project.Name}"
+            DeployOctopusRelease.ReleaseNumber = "#{Octopus.Release.CurrentForEnvironment.Number}"
+            DeployOctopusRelease.ServiceAccount = "Octopus.Account"
+            DeployOctopusRelease.ServiceAccountIdToken = "#{Octopus.Action[Octopus-OIDC-Auth-Handshake].Output.AccessToken}"
+            Octopus.Action.Template.Id = "ActionTemplates-403"
+            Octopus.Action.Template.Version = "2"
         }
         worker_pool = "hosted-ubuntu"
     }
