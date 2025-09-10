@@ -13,37 +13,6 @@ step "production-approval" {
     }
 }
 
-step "hello-world" {
-    name = "Sample Script"
-
-    action {
-        action_type = "Octopus.Script"
-        properties = {
-            Octopus.Action.GitRepository.Source = "Project"
-            Octopus.Action.Script.ScriptFileName = "hello-world.sh"
-            Octopus.Action.Script.ScriptSource = "GitRepository"
-            OctopusUseBundledTooling = "False"
-        }
-        worker_pool = "hosted-ubuntu"
-
-        container {
-            feed = "dockerhub"
-            image = "octopusdeploy/worker-tools:6.4.0-ubuntu.22.04"
-        }
-
-        packages "newservice" {
-            acquisition_location = "ExecutionTarget"
-            feed = "github-container-registry"
-            package_id = "robpearson/newservice"
-            properties = {
-                Extract = "False"
-                Purpose = ""
-                SelectionMode = "immediate"
-            }
-        }
-    }
-}
-
 step "gcp-test" {
     name = "GCP Test"
 
