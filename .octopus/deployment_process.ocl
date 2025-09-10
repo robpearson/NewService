@@ -164,8 +164,14 @@ step "rollback-on-failure" {
             DeployOctopusRelease.ServiceAccountIdToken = "#{Octopus.Action[Octopus-OIDC-Auth-Handshake].Output.AccessToken}"
             Octopus.Action.Template.Id = "ActionTemplates-403"
             Octopus.Action.Template.Version = "3"
+            OctopusUseBundledTooling = "False"
         }
         worker_pool = "hosted-ubuntu"
+
+        container {
+            feed = "dockerhub"
+            image = "octopusdeploy/worker-tools:6.4.0-ubuntu.22.04"
+        }
     }
 }
 
