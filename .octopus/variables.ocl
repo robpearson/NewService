@@ -3,3 +3,9 @@ variable "Project.Account" {
 
     value "gcp-developer-playground" {}
 }
+
+variable "Octopus.Account" {
+    type = "GenericOidcAccount"
+
+    value "octopus-oidc" {}
+}
