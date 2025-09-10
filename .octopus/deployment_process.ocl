@@ -163,7 +163,7 @@ step "rollback-on-failure" {
             DeployOctopusRelease.ServiceAccount = "Octopus.Account"
             DeployOctopusRelease.ServiceAccountIdToken = "#{Octopus.Action[Octopus-OIDC-Auth-Handshake].Output.AccessToken}"
             Octopus.Action.Template.Id = "ActionTemplates-403"
-            Octopus.Action.Template.Version = "4"
+            Octopus.Action.Template.Version = "5"
         }
         worker_pool = "hosted-ubuntu"
 
