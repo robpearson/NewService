@@ -1,0 +1,33 @@
+name: Pull Requests
+
+on:
+  pull_request:
+
+jobs:
+  
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set Version
+        run: echo "PACKAGE_VERSION=1.0.$((GITHUB_RUN_NUMBER))" >> $GITHUB_ENV
+
+      - name: Run a one-line script
+        run: echo Hello, world!
+  
+      - name: Login to Octopus Deploy 
+        uses: OctopusDeploy/login@v1.0.1
+        with: 
+          server: https://robpearson.octopus.app
+          api_key: ${{secrets.OCTOPUS_API_KEY}}
+  
+      - name: Create Octopus Release
+        uses: OctopusDeploy/create-release-action@v3
+        with: 
+          space: ${{secrets.OCTOPUS_SPACE}}
+          project: 'NewService'
+          channel: 'Pull Requests'
+          release_number: ${{ env.PACKAGE_VERSION }}
+          release_notes: 'GitHub Commits URL: ${{ github.event.pull_request.commits_url }}'
+          git_ref: ${{ (github.ref_type == 'tag' && github.event.repository.default_branch ) || (github.head_ref || github.ref) }}
